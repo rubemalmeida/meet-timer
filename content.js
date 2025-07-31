@@ -10,6 +10,21 @@ let timerState = {
     isBlinking: false
 };
 
+// Helper function for safe storage operations
+function safeStorageSet(data) {
+    if (chrome.storage && chrome.storage.local) {
+        chrome.storage.local.set(data);
+    }
+}
+
+function safeStorageGet(keys, callback) {
+    if (chrome.storage && chrome.storage.local) {
+        chrome.storage.local.get(keys, callback);
+    } else {
+        callback({});
+    }
+}
+
 // Initialize timer when page loads
 function initTimer() {
     if (timerState.timerElement) {
@@ -27,7 +42,7 @@ function initTimer() {
     timerState.timerElement = timerDiv;
 
     // Load saved state
-    chrome.storage.local.get(['targetMinutes', 'isRunning', 'currentSeconds', 'startTime', 'pausedTime'], function(result) {
+    safeStorageGet(['targetMinutes', 'isRunning', 'currentSeconds', 'startTime', 'pausedTime'], function(result) {
         timerState.targetMinutes = result.targetMinutes || 0;
         timerState.isRunning = result.isRunning || false;
         timerState.currentSeconds = result.currentSeconds || 0;
@@ -68,10 +83,12 @@ function updateTimerDisplay() {
     }
 
     // Send update to popup
-    chrome.runtime.sendMessage({
-        action: 'timeUpdate',
-        currentSeconds: timerState.currentSeconds
-    }).catch(() => {}); // Ignore errors if popup is closed
+    if (chrome.runtime && chrome.runtime.sendMessage) {
+        chrome.runtime.sendMessage({
+            action: 'timeUpdate',
+            currentSeconds: timerState.currentSeconds
+        }).catch(() => {}); // Ignore errors if popup is closed
+    }
 }
 
 function startTimerInterval() {
@@ -86,7 +103,7 @@ function startTimerInterval() {
             timerState.currentSeconds = elapsed;
             
             // Save current state
-            chrome.storage.local.set({
+            safeStorageSet({
                 currentSeconds: timerState.currentSeconds
             });
 
@@ -125,7 +142,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
                     timerState.startTime = Date.now() - timerState.currentSeconds * 1000 - timerState.pausedTime;
                 }
                 
-                chrome.storage.local.set({
+                safeStorageSet({
                     startTime: timerState.startTime,
                     pausedTime: timerState.pausedTime
                 });
@@ -151,7 +168,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
             stopTimerInterval();
             updateTimerDisplay();
             
-            chrome.storage.local.set({
+            safeStorageSet({
                 startTime: null,
                 pausedTime: 0
             });

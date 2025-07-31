@@ -11,8 +11,23 @@ document.addEventListener('DOMContentLoaded', function() {
     let isRunning = false;
     let currentSeconds = 0;
 
+    // Helper functions for safe storage operations
+    function safeStorageSet(data) {
+        if (chrome.storage && chrome.storage.local) {
+            chrome.storage.local.set(data);
+        }
+    }
+
+    function safeStorageGet(keys, callback) {
+        if (chrome.storage && chrome.storage.local) {
+            chrome.storage.local.get(keys, callback);
+        } else {
+            callback({});
+        }
+    }
+
     // Load saved state
-    chrome.storage.local.get(['targetMinutes', 'isRunning', 'currentSeconds'], function(result) {
+    safeStorageGet(['targetMinutes', 'isRunning', 'currentSeconds'], function(result) {
         targetMinutes = result.targetMinutes || 0;
         isRunning = result.isRunning || false;
         currentSeconds = result.currentSeconds || 0;
@@ -38,16 +53,20 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function sendMessageToContent(message) {
-        chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
-            if (tabs[0] && tabs[0].url.includes('meet.google.com')) {
-                chrome.tabs.sendMessage(tabs[0].id, message);
-            }
-        });
+        if (chrome.tabs && chrome.tabs.query && chrome.tabs.sendMessage) {
+            chrome.tabs.query({active: true, currentWindow: true}, function(tabs) {
+                if (tabs[0] && tabs[0].url && tabs[0].url.includes('meet.google.com')) {
+                    chrome.tabs.sendMessage(tabs[0].id, message).catch(() => {
+                        // Ignore errors if content script is not ready
+                    });
+                }
+            });
+        }
     }
 
     increaseBtn.addEventListener('click', function() {
         targetMinutes++;
-        chrome.storage.local.set({targetMinutes: targetMinutes});
+        safeStorageSet({targetMinutes: targetMinutes});
         sendMessageToContent({action: 'updateTarget', targetMinutes: targetMinutes});
         updateDisplay();
     });
@@ -55,7 +74,7 @@ document.addEventListener('DOMContentLoaded', function() {
     decreaseBtn.addEventListener('click', function() {
         if (targetMinutes > 0) {
             targetMinutes--;
-            chrome.storage.local.set({targetMinutes: targetMinutes});
+            safeStorageSet({targetMinutes: targetMinutes});
             sendMessageToContent({action: 'updateTarget', targetMinutes: targetMinutes});
             updateDisplay();
         }
@@ -63,7 +82,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     startBtn.addEventListener('click', function() {
         isRunning = !isRunning;
-        chrome.storage.local.set({isRunning: isRunning});
+        safeStorageSet({isRunning: isRunning});
         sendMessageToContent({action: 'toggleTimer', isRunning: isRunning});
         updateDisplay();
     });
@@ -71,7 +90,7 @@ document.addEventListener('DOMContentLoaded', function() {
     resetBtn.addEventListener('click', function() {
         isRunning = false;
         currentSeconds = 0;
-        chrome.storage.local.set({isRunning: false, currentSeconds: 0});
+        safeStorageSet({isRunning: false, currentSeconds: 0});
         sendMessageToContent({action: 'resetTimer'});
         updateDisplay();
     });

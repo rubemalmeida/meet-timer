@@ -5,7 +5,8 @@
     "description": "A timer for Google Meet meetings that appears in the bottom-left corner",
     "permissions": [
         "activeTab",
-        "scripting"
+        "scripting",
+        "storage"
     ],
     "host_permissions": [
         "https://meet.google.com/*"
