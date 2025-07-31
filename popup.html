@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: 200px;
+            padding: 15px;
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+        }
+
+        .timer-controls {
+            text-align: center;
+        }
+
+        .time-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            font-family: monospace;
+        }
+
+        .time-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 15px;
+            gap: 10px;
+        }
+
+        .time-btn {
+            width: 30px;
+            height: 30px;
+            border: none;
+            border-radius: 50%;
+            background-color: #4285f4;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .time-btn:hover {
+            background-color: #3367d6;
+        }
+
+        .minutes-display {
+            font-size: 16px;
+            font-weight: bold;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .action-btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+        }
+
+        .start-btn {
+            background-color: #34a853;
+        }
+
+        .start-btn:hover {
+            background-color: #2d8f47;
+        }
+
+        .reset-btn {
+            background-color: #ea4335;
+        }
+
+        .reset-btn:hover {
+            background-color: #d23b2c;
+        }
+
+        .status {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+
+    </style>
+</head>
+
+<body>
+    <div class="timer-controls">
+        <div class="time-display" id="currentTime">00:00</div>
+
+        <div class="time-controls">
+            <button class="time-btn" id="decreaseBtn">−</button>
+            <div class="minutes-display" id="minutesDisplay">0 min</div>
+            <button class="time-btn" id="increaseBtn">+</button>
+        </div>
+
+        <div class="action-buttons">
+            <button class="action-btn start-btn" id="startBtn">Start</button>
+            <button class="action-btn reset-btn" id="resetBtn">Reset</button>
+        </div>
+
+        <div class="status" id="status">Timer ready</div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+
+</html>

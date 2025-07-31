@@ -1,0 +1,43 @@
+.meet-timer {
+    position: fixed !important;
+    bottom: 20px !important;
+    left: 20px !important;
+    z-index: 10000 !important;
+
+    /* Styling */
+    background-color: rgba(0, 0, 0, 0.8) !important;
+    color: #ff0000 !important;
+    border: 2px solid #000000 !important;
+    border-radius: 8px !important;
+    padding: 8px 12px !important;
+
+    /* Typography */
+    font-family: 'Courier New', monospace !important;
+    font-size: 18px !important;
+    font-weight: bold !important;
+    text-align: center !important;
+
+    /* Ensure visibility */
+    pointer-events: none !important;
+    user-select: none !important;
+
+    /* Smooth transitions */
+    transition: opacity 0.3s ease !important;
+}
+
+.meet-timer.blinking {
+    animation: blink 1s infinite !important;
+}
+
+@keyframes blink {
+
+    0%,
+    50% {
+        opacity: 1;
+    }
+
+    51%,
+    100% {
+        opacity: 0.3;
+    }
+}
