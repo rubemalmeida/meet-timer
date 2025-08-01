@@ -7,7 +7,9 @@ let timerState = {
     pausedTime: 0,
     timerElement: null,
     intervalId: null,
-    isBlinking: false
+    isBlinking: false,
+    showOnMeet: true,
+    showOnPresentation: true
 };
 
 // Detect if we're on Google Slides
@@ -93,12 +95,14 @@ function initTimer() {
     timerState.timerElement = timerDiv;
 
     // Load saved state
-    safeStorageGet(['targetMinutes', 'isRunning', 'currentSeconds', 'startTime', 'pausedTime'], function (result) {
+    safeStorageGet(['targetMinutes', 'isRunning', 'currentSeconds', 'startTime', 'pausedTime', 'showOnMeet', 'showOnPresentation'], function (result) {
         timerState.targetMinutes = result.targetMinutes || 0;
         timerState.isRunning = result.isRunning || false;
         timerState.currentSeconds = result.currentSeconds || 0;
         timerState.startTime = result.startTime;
         timerState.pausedTime = result.pausedTime || 0;
+        timerState.showOnMeet = result.showOnMeet !== undefined ? result.showOnMeet : true;
+        timerState.showOnPresentation = result.showOnPresentation !== undefined ? result.showOnPresentation : true;
 
         updateTimerDisplay();
 
@@ -185,7 +189,11 @@ function checkTimerVisibility() {
     const isSlides = isGoogleSlides();
     const isPresentationActive = isSlides && isInPresentationMode();
 
-    const shouldShowTimer = isMeet || isPresentationActive;
+    // Check visibility settings from checkboxes
+    const shouldShowOnMeet = isMeet && timerState.showOnMeet;
+    const shouldShowOnPresentation = isPresentationActive && timerState.showOnPresentation;
+
+    const shouldShowTimer = shouldShowOnMeet || shouldShowOnPresentation;
     const timerExists = timerState.timerElement !== null;
 
     if (shouldShowTimer && !timerExists) {
@@ -250,6 +258,19 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
                 startTime: null,
                 pausedTime: 0
             });
+            break;
+
+        case 'updateVisibility':
+            timerState.showOnMeet = request.showOnMeet;
+            timerState.showOnPresentation = request.showOnPresentation;
+
+            safeStorageSet({
+                showOnMeet: timerState.showOnMeet,
+                showOnPresentation: timerState.showOnPresentation
+            });
+
+            // Check if timer should be shown/hidden based on new settings
+            checkTimerVisibility();
             break;
     }
 });

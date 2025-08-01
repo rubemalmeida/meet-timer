@@ -95,6 +95,47 @@
             text-align: center;
         }
 
+        .visibility-controls {
+            margin: 15px 0 10px 0;
+            padding: 10px 0;
+            border-top: 1px solid #ddd;
+        }
+
+        .checkbox-group {
+            margin-bottom: 8px;
+        }
+
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .checkbox-label input[type="checkbox"] {
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .checkbox-label input[type="checkbox"]:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
+
+        .checkbox-label span {
+            font-weight: 500;
+        }
+
+        .action-btn:disabled {
+            background-color: #ccc !important;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
     </style>
 </head>
 
@@ -111,6 +152,21 @@
         <div class="action-buttons">
             <button class="action-btn start-btn" id="startBtn">Start</button>
             <button class="action-btn reset-btn" id="resetBtn">Reset</button>
+        </div>
+
+        <div class="visibility-controls">
+            <div class="checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="meetCheckbox" checked>
+                    <span>Show on Meet</span>
+                </label>
+            </div>
+            <div class="checkbox-group">
+                <label class="checkbox-label">
+                    <input type="checkbox" id="presentationCheckbox" checked>
+                    <span>Show on Slides</span>
+                </label>
+            </div>
         </div>
 
         <div class="status" id="status">Timer ready</div>

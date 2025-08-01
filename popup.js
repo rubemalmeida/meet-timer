@@ -6,10 +6,14 @@ document.addEventListener('DOMContentLoaded', function () {
     const minutesDisplay = document.getElementById('minutesDisplay');
     const currentTimeDisplay = document.getElementById('currentTime');
     const status = document.getElementById('status');
+    const meetCheckbox = document.getElementById('meetCheckbox');
+    const presentationCheckbox = document.getElementById('presentationCheckbox');
 
     let targetMinutes = 0;
     let isRunning = false;
     let currentSeconds = 0;
+    let showOnMeet = true;
+    let showOnPresentation = true;
 
     // Helper functions for safe storage operations
     function safeStorageSet(data) {
@@ -27,10 +31,16 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     // Load saved state
-    safeStorageGet(['targetMinutes', 'isRunning', 'currentSeconds'], function (result) {
+    safeStorageGet(['targetMinutes', 'isRunning', 'currentSeconds', 'showOnMeet', 'showOnPresentation'], function (result) {
         targetMinutes = result.targetMinutes || 0;
         isRunning = result.isRunning || false;
         currentSeconds = result.currentSeconds || 0;
+        showOnMeet = result.showOnMeet !== undefined ? result.showOnMeet : true;
+        showOnPresentation = result.showOnPresentation !== undefined ? result.showOnPresentation : true;
+
+        meetCheckbox.checked = showOnMeet;
+        presentationCheckbox.checked = showOnPresentation;
+
         updateDisplay();
     });
 
@@ -43,10 +53,21 @@ document.addEventListener('DOMContentLoaded', function () {
 
         startBtn.textContent = isRunning ? 'Pause' : 'Start';
 
+        // Enable/disable start button based on checkbox state
+        const hasAnyCheckboxEnabled = showOnMeet || showOnPresentation;
+        startBtn.disabled = !hasAnyCheckboxEnabled;
+
+        // Enable/disable checkboxes based on timer state
+        const canChangeCheckboxes = currentSeconds === 0 && !isRunning;
+        meetCheckbox.disabled = !canChangeCheckboxes;
+        presentationCheckbox.disabled = !canChangeCheckboxes;
+
         if (isRunning) {
             status.textContent = 'Timer running';
         } else if (currentSeconds > 0) {
             status.textContent = 'Timer paused';
+        } else if (!hasAnyCheckboxEnabled) {
+            status.textContent = 'Select where to show timer';
         } else {
             status.textContent = 'Timer ready';
         }
@@ -65,6 +86,21 @@ document.addEventListener('DOMContentLoaded', function () {
             });
         }
     }
+
+    // Checkbox event listeners
+    meetCheckbox.addEventListener('change', function () {
+        showOnMeet = meetCheckbox.checked;
+        safeStorageSet({ showOnMeet: showOnMeet });
+        sendMessageToContent({ action: 'updateVisibility', showOnMeet: showOnMeet, showOnPresentation: showOnPresentation });
+        updateDisplay();
+    });
+
+    presentationCheckbox.addEventListener('change', function () {
+        showOnPresentation = presentationCheckbox.checked;
+        safeStorageSet({ showOnPresentation: showOnPresentation });
+        sendMessageToContent({ action: 'updateVisibility', showOnMeet: showOnMeet, showOnPresentation: showOnPresentation });
+        updateDisplay();
+    });
 
     increaseBtn.addEventListener('click', function () {
         targetMinutes++;
