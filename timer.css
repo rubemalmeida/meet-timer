@@ -25,6 +25,30 @@
     transition: opacity 0.3s ease !important;
 }
 
+/* Specific styling for Google Slides */
+.meet-timer.slides-timer {
+    /* Higher z-index for Google Slides to appear above presentation elements */
+    z-index: 2147483647 !important;
+
+    /* Slightly different positioning for slides */
+    top: 30px !important;
+    left: 30px !important;
+
+    /* More prominent styling for presentations */
+    background-color: rgba(0, 0, 0, 0.9) !important;
+    border: 3px solid #ff0000 !important;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.5) !important;
+
+    /* Larger font for better visibility during presentations */
+    font-size: 20px !important;
+    padding: 10px 15px !important;
+
+    /* Ensure it's always visible */
+    position: fixed !important;
+    display: block !important;
+    visibility: visible !important;
+}
+
 .meet-timer.blinking {
     animation: blink 1s infinite !important;
 }
