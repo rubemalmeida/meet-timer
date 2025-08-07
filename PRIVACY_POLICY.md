@@ -1,6 +1,6 @@
 # Privacy Policy for Google Meet Timer Extension
 
-*Last updated: August 1, 2025*
+*Last updated: August 7, 2025*
 
 ## Introduction
 
